@@ -12,7 +12,7 @@
  *                                                                        *
  **************************************************************************/
 
-using MASMA.Enumaration;
+using MASMA.OddEven;
 
 namespace MASMA
 {
@@ -72,7 +72,20 @@ namespace MASMA
             //env.Add(masterAgent, Agents.MasterAgent);
             //masterAgent.Start();
 
-            for (int i = 0; i < Utils.NoAgents; i++)
+            // enum
+
+            //for (int i = 0; i < Utils.NoAgents; i++)
+            //{
+            //    var workerAgent = new WorkerAgent(i);
+            //    env.Add(workerAgent, string.Format("Slave{0:D2}", i));
+            //    workerAgent.Start();
+            //}
+
+            //var masterAgent = new MasterAgent();
+            //env.Add(masterAgent, Agents.MasterAgent);
+            //masterAgent.Start();
+
+            for (int i = 0; i < 2; i++)
             {
                 var workerAgent = new WorkerAgent(i);
                 env.Add(workerAgent, string.Format("Slave{0:D2}", i));
@@ -82,6 +95,7 @@ namespace MASMA
             var masterAgent = new MasterAgent();
             env.Add(masterAgent, Agents.MasterAgent);
             masterAgent.Start();
+
 
             env.WaitAll();
 #endif

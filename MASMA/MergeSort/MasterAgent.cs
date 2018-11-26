@@ -113,7 +113,7 @@ namespace MASMA.MergeSort
         public override void BeforeStop()
         {
             Console.WriteLine(_counter.Stop());
-            Utils.Assert();
+            Utils.Assert(Utils.Destination);
         }
     }
 }
