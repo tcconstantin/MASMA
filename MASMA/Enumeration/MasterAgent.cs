@@ -3,7 +3,7 @@ using MASMA.Common;
 using MASMA.Message;
 using System;
 
-namespace MASMA.Enumaration
+namespace MASMA.Enumeration
 {
     public class MasterAgent: Agent
     {

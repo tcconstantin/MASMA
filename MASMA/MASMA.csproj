@@ -48,9 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\HighResTimer.cs" />
-    <Compile Include="Enumaration\Actions.cs" />
-    <Compile Include="Enumaration\MasterAgent.cs" />
-    <Compile Include="Enumaration\WorkerAgent.cs" />
+    <Compile Include="Enumeration\Actions.cs" />
+    <Compile Include="Enumeration\MasterAgent.cs" />
+    <Compile Include="Enumeration\WorkerAgent.cs" />
     <Compile Include="MergeSort\Actions.cs" />
     <Compile Include="MergeSort\MasterAgent.cs" />
     <Compile Include="Message\BaseMessage.cs" />

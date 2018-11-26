@@ -1,4 +1,4 @@
-﻿namespace MASMA.Enumaration
+﻿namespace MASMA.Enumeration
 {
     public class Actions
     {

@@ -1,7 +1,7 @@
 ﻿using ActressMas;
 using MASMA.Message;
 
-namespace MASMA.Enumaration
+namespace MASMA.Enumeration
 {
     public class WorkerAgent: Agent
     {
