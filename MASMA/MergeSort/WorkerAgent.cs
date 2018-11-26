@@ -14,12 +14,13 @@
 
 using System;
 using ActressMas;
+using MASMA.Message;
 
-namespace MASMA
+namespace MASMA.MergeSort
 {
     public class WorkerAgent : Agent
     {
-        public override void Act(Message message)
+        public override void Act(ActressMas.Message message)
         {
             var standardMessage = new StandardMessage(message.Content);
 

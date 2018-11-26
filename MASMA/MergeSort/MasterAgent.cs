@@ -13,10 +13,12 @@
  **************************************************************************/
 
 using ActressMas;
+using MASMA.Common;
+using MASMA.Message;
 using System;
 using System.Collections.Generic;
 
-namespace MASMA
+namespace MASMA.MergeSort
 {
     public class MasterAgent : Agent
     {
@@ -69,7 +71,7 @@ namespace MASMA
             Send(agentName, currentMessage.ToString());
         }
 
-        public override void Act(Message message)
+        public override void Act(ActressMas.Message message)
         {
             var standardMessage = new StandardMessage(message.Content);
 

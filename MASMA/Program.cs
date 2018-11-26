@@ -12,6 +12,8 @@
  *                                                                        *
  **************************************************************************/
 
+using MASMA.Enumaration;
+
 namespace MASMA
 {
     class Program
@@ -57,16 +59,27 @@ namespace MASMA
 
             var env = new ActressMas.Environment();
 
+            //var masterAgent = new MasterAgent();
+            //var leftAgent = new WorkerAgent();
+            //var rightAgent = new WorkerAgent();
+
+            //env.Add(leftAgent, Agents.WorkerAgentLeft);
+            //leftAgent.Start();
+
+            //env.Add(rightAgent, Agents.WorkerAgentRight);
+            //rightAgent.Start();
+
+            //env.Add(masterAgent, Agents.MasterAgent);
+            //masterAgent.Start();
+
+            for (int i = 0; i < Utils.NoAgents; i++)
+            {
+                var workerAgent = new WorkerAgent(i);
+                env.Add(workerAgent, string.Format("Slave{0:D2}", i));
+                workerAgent.Start();
+            }
+
             var masterAgent = new MasterAgent();
-            var leftAgent = new WorkerAgent();
-            var rightAgent = new WorkerAgent();
-
-            env.Add(leftAgent, Agents.WorkerAgentLeft);
-            leftAgent.Start();
-
-            env.Add(rightAgent, Agents.WorkerAgentRight);
-            rightAgent.Start();
-
             env.Add(masterAgent, Agents.MasterAgent);
             masterAgent.Start();
 

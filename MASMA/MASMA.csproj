@@ -47,13 +47,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HighResTimer.cs" />
-    <Compile Include="MasterAgent.cs" />
-    <Compile Include="ParallelAlgorithm.cs" />
+    <Compile Include="Common\HighResTimer.cs" />
+    <Compile Include="Enumaration\Actions.cs" />
+    <Compile Include="Enumaration\MasterAgent.cs" />
+    <Compile Include="Enumaration\WorkerAgent.cs" />
+    <Compile Include="MergeSort\Actions.cs" />
+    <Compile Include="MergeSort\MasterAgent.cs" />
+    <Compile Include="Message\BaseMessage.cs" />
+    <Compile Include="MergeSort\ParallelAlgorithm.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StandardMessage.cs" />
-    <Compile Include="WorkerAgent.cs" />
+    <Compile Include="Message\StandardMessage.cs" />
+    <Compile Include="MergeSort\WorkerAgent.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

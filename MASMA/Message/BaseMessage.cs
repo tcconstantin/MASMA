@@ -1,6 +1,6 @@
 ﻿/**************************************************************************
  *                                                                        *
- *  File:        StandardMessage.cs                                       *
+ *  File:        BaseMessage.cs                                           *
  *  Description: Merge Sort multi-agent                                   *
  *                                                                        *
  *  This program is free software; you can redistribute it and/or modify  *
@@ -12,41 +12,27 @@
  *                                                                        *
  **************************************************************************/
 
-namespace MASMA
+namespace MASMA.Message
 {
-    public enum StandardMessageParts
-    {
-        Action = 0,
-        Left,
-        Right,
-        SourceToDestination
-    }
-
-    public class StandardMessage
+    public class BaseMessage
     {
         public string Action { get; set; }
-        public int Left { get; set; }
-        public int Right { get; set; }
-        public bool SourceToDestination { get; set; }
 
-        public StandardMessage()
+        public BaseMessage()
         {
 
         }
 
-        public StandardMessage(string content)
+        public BaseMessage(string content)
         {
             string[] messageParts = content.Split();
 
-            Action = messageParts[(int)StandardMessageParts.Action];
-            Left = int.Parse(messageParts[(int)StandardMessageParts.Left]);
-            Right = int.Parse(messageParts[(int)StandardMessageParts.Right]);
-            SourceToDestination = bool.Parse(messageParts[(int)StandardMessageParts.SourceToDestination]);
+            Action = messageParts[0];
         }
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3}", Action, Left, Right, SourceToDestination);
+            return string.Format("{0}", Action);
         }
     }
 }

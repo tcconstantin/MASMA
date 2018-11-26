@@ -23,30 +23,26 @@ namespace MASMA
         public static int[] Source = new int[Length];
         public static int[] Destination = new int[Length];
 
+        public static bool SkipNext = false;
+        public static int NoAgents = 10;
+
         public static void Assert()
         {
             for (int i = 0; i < Utils.Length - 1; ++i)
             {
-                if (Utils.Destination[i] >= Utils.Destination[i + 1])
+                if (Destination[i] > Destination[i + 1])
                 {
                     Console.WriteLine("FAIL");
                     break;
                 }
             }
         }
-    }
 
-    public class Actions
-    {
-        public const string Sort = "sort";
-        public const string Merge = "merge";
-        public const string Split = "split";
-    }
-
-    public class Agents
-    {
-        public static string MasterAgent = "master-agent";
-        public static string WorkerAgentLeft = "worker-agent-left";
-        public static string WorkerAgentRight = "worker-agent-right";
+        public static void Swap(ref int a, ref int b)
+        {
+            int temp = a;
+            a = b;
+            b = temp;
+        }
     }
 }

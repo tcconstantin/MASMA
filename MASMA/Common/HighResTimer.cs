@@ -15,7 +15,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace MASMA
+namespace MASMA.Common
 {
     public class HighResTimer
     {
