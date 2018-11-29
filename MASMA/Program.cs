@@ -1,4 +1,4 @@
-﻿/**************************************************************************
+/**************************************************************************
  *                                                                        *
  *  File:        Program.cs                                               *
  *  Description: Merge Sort multi-agent                                   *
@@ -11,8 +11,9 @@
  *  PURPOSE. See the GNU General Public License for more details.         *
  *                                                                        *
  **************************************************************************/
+#define ENUMERATIONS
+using System;
 
-//#define ENUMERATION
 
 #if MERGESORT
 using MASMA.MergeSort;
@@ -20,6 +21,7 @@ using MASMA.MergeSort;
 using MASMA.Enumeration;
 #else
 using MASMA.OddEven;
+using System.Threading;
 #endif
 
 namespace MASMA
@@ -59,20 +61,24 @@ namespace MASMA
             masterAgent.Start();
 
 #else
-            for (int i = 0; i < 2; i++)
+            Utils.numAg = 6;
+            Utils.slaveElem = Utils.Source.Length / Utils.numAg;
+
+            for (int i = 0; i < Utils.numAg; i++)
             {
                 var workerAgent = new WorkerAgent(i);
                 env.Add(workerAgent, string.Format("Slave{0:D2}", i));
+                Utils.agentPool.Add(workerAgent.Name);
                 workerAgent.Start();
             }
-
+            Thread.Sleep(1000);
             var masterAgent = new MasterAgent();
             env.Add(masterAgent, Agents.MasterAgent);
             masterAgent.Start();
 
 #endif
             env.WaitAll();
-
+            Console.ReadKey();
         }
     }
 }
