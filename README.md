@@ -10,3 +10,5 @@
 3. Merge Sort parallel
     - Parallel In-Place Merge Sort (http://www.drdobbs.com/parallel/)
     - High Performance Computing in C# (https://github.com/DragonSpit/HPCsharp)
+##Merge sort - parallel
+http://selkie-macalester.org/csinparallel/modules/MPIProgramming/build/html/mergeSort/mergeSort.html
