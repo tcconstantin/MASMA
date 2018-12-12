@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace MASMA
 {
@@ -24,6 +25,7 @@ namespace MASMA
         public static int[] Source = new int[Length];
         public static int[] Destination = new int[Length];
         public static Random Rand = new Random();
+        public static ActressMas.Environment Env;
 
         // MergeSort
         public static int Threshold = 5;
@@ -36,17 +38,21 @@ namespace MASMA
         public static bool IsSorted = false;
         public static bool OrderType = true;
 
-        public static int numAg;
+        public static int NrAgent;
         public static int slaveElem;
-        public static List<String> agentPool = new List<string>();
+        public static List<String> AgentPool = new List<string>();
+        public static List<string> ValidagentPool = new List<string>();
         public static Dictionary<String, int[]> destination = new Dictionary<string, int[]>();
         public static List<int> lsort = new List<int>();
-
-
+        public static Boolean finalSplit = false;
 
         // Tests
         public static void Assert(int[] array)
         {
+            Program.Log.Warn("Array: ");
+
+            StringBuilder text = new StringBuilder();
+
             for (int i = 0; i < array.Length - 1; ++i)
             {
                 if (array[i] > array[i + 1])
@@ -54,36 +60,12 @@ namespace MASMA
                     Console.WriteLine("FAIL");
                     break;
                 }
+
+                if(array[i] != 0)
+                    text.Append($"{array[i]} ");
             }
-        }
-        public static string Str(object p1, object p2)
-        {
-            return string.Format("{0} {1}", p1, p2);
-        }
-        public static void ParseMessage(string content, out string action, out string parameters)
-        {
-            string[] t = content.Split();
 
-            action = t[0];
-
-            parameters = "";
-
-            if (t.Length > 1)
-            {
-                for (int i = 1; i < t.Length - 1; i++)
-                    parameters += t[i] + " ";
-                parameters += t[t.Length - 1];
-            }
-        }
-        public static void ParseMessage(string content, out string action, out List<string> parameters)
-        {
-            string[] t = content.Split();
-
-            action = t[0];
-
-            parameters = new List<string>();
-            for (int i = 1; i < t.Length; i++)
-                parameters.Add(t[i]);
+            Program.Log.Warn(text.ToString());
         }
 
         public static void Init(Case @case)
@@ -109,14 +91,6 @@ namespace MASMA
                     }
                     break;
             }
-        }
-
-        // Utils
-        public static void Swap(ref int a, ref int b)
-        {
-            int temp = a;
-            a = b;
-            b = temp;
         }
     }
 

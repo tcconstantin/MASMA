@@ -16,16 +16,18 @@ namespace MASMA.Common
 
         public BaseMaster(string name) : base(name)
         {
-
+            Program.Log.Debug($"[{name}]: Ctor");
         }
 
         public override void BeforeStop()
         {
             Statistics.Add(this.Statistic);
 
+            Program.Log.Warn($"[{Name}]: Statistics:");
+
             foreach (var statistic in Statistics)
             {
-                Console.WriteLine(statistic.ToString());
+                Program.Log.Warn(statistic.ToString());
             }
         }
     }

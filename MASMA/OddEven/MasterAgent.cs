@@ -41,10 +41,11 @@ namespace MASMA.OddEven
 
                     _countSort++;
 
-                    if (_countSort == Utils.numAg)
+                    if (_countSort == Utils.NrAgent)
                     {
 
-                        int k = Utils.numAg - 1;
+                        int k = Utils.NrAgent - 1;
+
                         while (k > 0)
                         {
                             EvenPhase();
@@ -52,9 +53,9 @@ namespace MASMA.OddEven
                             k--;
                         }
 
-                        for (int j = 0; j < Utils.agentPool.Count; j++)
+                        for (int j = 0; j < Utils.AgentPool.Count; j++)
                         {
-                            Send(Utils.agentPool[j], new BaseMessage<int>
+                            Send(Utils.AgentPool[j], new BaseMessage<int>
                             {
                                 Message = new Message<int>()
                                 {
@@ -69,7 +70,7 @@ namespace MASMA.OddEven
 
                     _countPrint++;
 
-                    if (_countPrint == Utils.numAg)
+                    if (_countPrint == Utils.NrAgent)
                     {
                         Utils.Destination = Utils.lsort.ToArray();
                         Stop();
@@ -87,13 +88,13 @@ namespace MASMA.OddEven
             Pair pair = new Pair(0, 0);
             int agentIndex = 0;
 
-            int blockSize = (int)decimal.Round((decimal)Utils.Source.Length / Utils.numAg);
+            int blockSize = (int)decimal.Round((decimal)Utils.Source.Length / Utils.NrAgent);
 
-            while (agentIndex < Utils.numAg)
+            while (agentIndex < Utils.NrAgent)
             {
                 pair.Start = blockSize * agentIndex;
 
-                if ((Utils.numAg - 1 == agentIndex) ||
+                if ((Utils.NrAgent - 1 == agentIndex) ||
                     (pair.Start + blockSize > Utils.Source.Length))
                 {
                     pair.End = Utils.Source.Length;
@@ -103,7 +104,7 @@ namespace MASMA.OddEven
                     pair.End = (agentIndex + 1) * blockSize;
                 }
 
-                Send(Utils.agentPool[agentIndex], new BaseMessage<List<int>>
+                Send(Utils.AgentPool[agentIndex], new BaseMessage<List<int>>
                 {
                     Message = new Message<List<int>>()
                     {
@@ -131,11 +132,11 @@ namespace MASMA.OddEven
         private bool HasNeighbor(string agent)
         {
             bool ret = false;
-            int index = Utils.agentPool.IndexOf(agent);
+            int index = Utils.AgentPool.IndexOf(agent);
 
             try
             {
-                Utils.agentPool[index + 1].ToString();
+                Utils.AgentPool[index + 1].ToString();
                 ret = true;
             }
             catch (Exception e)
@@ -148,13 +149,13 @@ namespace MASMA.OddEven
 
         private void EvenPhase()
         {
-            for (int i = 0; i < Utils.agentPool.Count; i++)
+            for (int i = 0; i < Utils.AgentPool.Count; i++)
             {
                 if (i % 2 == 0)
                 {
-                    if (HasNeighbor(Utils.agentPool[i]))
+                    if (HasNeighbor(Utils.AgentPool[i]))
                     {
-                        Send(Utils.agentPool[i], new BaseMessage<int>
+                        Send(Utils.AgentPool[i], new BaseMessage<int>
                         {
                             Message = new Message<int>()
                             {
@@ -168,13 +169,13 @@ namespace MASMA.OddEven
 
         private void OddPhase()
         {
-            for (int i = 0; i < Utils.agentPool.Count; i++)
+            for (int i = 0; i < Utils.AgentPool.Count; i++)
             {
                 if (i % 2 == 1)
                 {
-                    if (HasNeighbor(Utils.agentPool[i]))
+                    if (HasNeighbor(Utils.AgentPool[i]))
                     {
-                        Send(Utils.agentPool[i], new BaseMessage<int>
+                        Send(Utils.AgentPool[i], new BaseMessage<int>
                         {
                             Message = new Message<int>()
                             {

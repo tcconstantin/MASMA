@@ -11,8 +11,11 @@
  *  PURPOSE. See the GNU General Public License for more details.         *
  *                                                                        *
  **************************************************************************/
-//#define ENUMERATION
+#define MERGESORT
 using System;
+using log4net;
+using log4net.Config;
+using System.Threading;
 
 
 #if MERGESORT
@@ -28,25 +31,29 @@ namespace MASMA
 {
     class Program
     {
+        public static readonly ILog Log = LogManager.GetLogger(typeof(Program));
+
         static void Main(string[] args)
         {
+            XmlConfigurator.Configure();
 
             Utils.Init(Case.WORST);
 
             var env = new ActressMas.Environment();
+            Utils.Env = new ActressMas.Environment();
+
 
 #if MERGESORT
+            var workerAgent = new WorkerAgent();
+
+            Utils.Env.Add(workerAgent, string.Format("Slave{0:D2}", 0));
+            Utils.AgentPool.Add(workerAgent.Name);
+            workerAgent.Start();
+
+            Thread.Sleep(200);
+
             var masterAgent = new MasterAgent();
-            var leftAgent = new WorkerAgent();
-            var rightAgent = new WorkerAgent();
-
-            env.Add(leftAgent, Agents.WorkerAgentLeft);
-            leftAgent.Start();
-
-            env.Add(rightAgent, Agents.WorkerAgentRight);
-            rightAgent.Start();
-
-            env.Add(masterAgent, Agents.MasterAgent);
+            Utils.Env.Add(masterAgent, Agents.MasterAgent);
             masterAgent.Start();
 #elif ENUMERATION
             for (int i = 0; i < Utils.NoAgents; i++)
@@ -61,14 +68,14 @@ namespace MASMA
             masterAgent.Start();
 
 #else
-            Utils.numAg = 6;
-            Utils.slaveElem = Utils.Source.Length / Utils.numAg;
+            Utils.NrAgent = 6;
+            Utils.slaveElem = Utils.Source.Length / Utils.NrAgent;
 
-            for (int i = 0; i < Utils.numAg; i++)
+            for (int i = 0; i < Utils.NrAgent; i++)
             {
                 var workerAgent = new WorkerAgent(i);
                 env.Add(workerAgent, string.Format("Slave{0:D2}", i));
-                Utils.agentPool.Add(workerAgent.Name);
+                Utils.AgentPool.Add(workerAgent.Name);
                 workerAgent.Start();
             }
             Thread.Sleep(1000);

@@ -41,9 +41,9 @@ namespace MASMA.OddEven
 
                     if (HasNeighbor(this.Name))
                     {
-                        int index = Utils.agentPool.IndexOf(this.Name);
+                        int index = Utils.AgentPool.IndexOf(this.Name);
 
-                        Send(Utils.agentPool[index + 1], new BaseMessage<List<int>>
+                        Send(Utils.AgentPool[index + 1], new BaseMessage<List<int>>
                         {
                             Message = new Message<List<int>>()
                             {
@@ -59,9 +59,9 @@ namespace MASMA.OddEven
 
                     if (HasNeighbor(this.Name))
                     {
-                        int index = Utils.agentPool.IndexOf(this.Name);
+                        int index = Utils.AgentPool.IndexOf(this.Name);
 
-                        Send(Utils.agentPool[index + 1], new BaseMessage<List<int>>
+                        Send(Utils.AgentPool[index + 1], new BaseMessage<List<int>>
                         {
                             Message = new Message<List<int>>()
                             {
@@ -128,11 +128,11 @@ namespace MASMA.OddEven
         private bool HasNeighbor(string agent)
         {
             bool ret = false;
-            int index = Utils.agentPool.IndexOf(agent);
+            int index = Utils.AgentPool.IndexOf(agent);
 
             try
             {
-                Utils.agentPool[index + 1].ToString();
+                Utils.AgentPool[index + 1].ToString();
                 ret = true;
             }
             catch (Exception e)

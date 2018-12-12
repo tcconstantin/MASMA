@@ -12,7 +12,7 @@ namespace MASMA.Common
 
         public BaseWorker(string name) : base(name)
         {
-
+            Program.Log.Debug($"[{name}]: Ctor");
         }
 
         public override void BeforeStop()
