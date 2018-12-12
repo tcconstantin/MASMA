@@ -11,7 +11,7 @@
  *  PURPOSE. See the GNU General Public License for more details.         *
  *                                                                        *
  **************************************************************************/
-#define ENUMERATIONS
+//#define ENUMERATION
 using System;
 
 

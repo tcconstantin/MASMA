@@ -1,169 +1,189 @@
 using ActressMas;
 using MASMA.Common;
+using MASMA.Common.Models;
 using MASMA.Message;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
 namespace MASMA.OddEven
 {
-    public class MasterAgent : Agent
+    public class MasterAgent : BaseMaster
     {
- 
-        private HighResTimer _counter = new HighResTimer();
+        private int _countSort = 0;
+        private int _countPrint = 0;
 
-        private int countdone_sort_asignData = 0;
-        private int countdone_done_print = 0;
+        public MasterAgent() : 
+            base(MASMA.Agents.MasterAgent)
+        {
+
+        }
 
         public override void BeforeStop()
         {
-            Console.WriteLine(_counter.Stop());
+            base.BeforeStop();
+
             Utils.Assert(Utils.Destination);
         }
 
         public override void Setup()
         {
-            _counter.Start();
-            split();
+            Split();
         }
 
         public override void Act(ActressMas.Message message)
         {
-            var baseMessage = new BaseMessage(message.Content);
-            Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
+            var baseMessage = new BaseMessage<object>(message.Content);
 
-            string action;
-            string parameters;
-            Utils.ParseMessage(message.Content, out action, out parameters);
-
-            switch (baseMessage.Action)
+            switch (baseMessage.Message.Action)
             {
                 case Actions.DoneAssignAndSort:
-                    countdone_sort_asignData++;
-                    if (countdone_sort_asignData == Utils.numAg)
+
+                    _countSort++;
+
+                    if (_countSort == Utils.numAg)
                     {
-                       
+
                         int k = Utils.numAg - 1;
                         while (k > 0)
                         {
-                            evenPhase();
-                            oddPhase();
+                            EvenPhase();
+                            OddPhase();
                             k--;
                         }
-                        for (int j = 0; j < Utils.agentPool.Count; j++)
-                            Send(Utils.agentPool[j], new BaseMessage { Action = Actions.PrintData }.ToString());
-                    }
 
+                        for (int j = 0; j < Utils.agentPool.Count; j++)
+                        {
+                            Send(Utils.agentPool[j], new BaseMessage<int>
+                            {
+                                Message = new Message<int>()
+                                {
+                                    Action = Actions.PrintData
+                                }
+                            }.ToString());
+                        }
+                    }
 
                     break;
                 case Actions.DonePrint:
-                    countdone_done_print++;
-                    if (countdone_done_print == Utils.numAg)
+
+                    _countPrint++;
+
+                    if (_countPrint == Utils.numAg)
                     {
-                        ////asdas
-                        ///
-                        for (int i = 0; i < Utils.lsort.Count; i++)
-                        {
-                            Console.Write(Utils.lsort[i] + ",");
-                        }
                         Utils.Destination = Utils.lsort.ToArray();
                         Stop();
                     }
 
                     break;
+                case MASMA.Actions.Statistic:
+                    Statistics.Add(JObject.Parse(baseMessage.Message.Data.ToString()).ToObject<Statistic>());
+                    break;
             }
         }
 
-        public void split()
+        private void Split()
         {
+            Pair pair = new Pair(0, 0);
             int agentIndex = 0;
-            int startindex = 0;
-            int endindex = 0;
+
             int blockSize = (int)decimal.Round((decimal)Utils.Source.Length / Utils.numAg);
+
             while (agentIndex < Utils.numAg)
             {
-                startindex = blockSize * agentIndex;
+                pair.Start = blockSize * agentIndex;
 
-                if (Utils.numAg - 1 == agentIndex || startindex + blockSize > Utils.Source.Length)
+                if ((Utils.numAg - 1 == agentIndex) ||
+                    (pair.Start + blockSize > Utils.Source.Length))
                 {
-                    endindex = Utils.Source.Length;
+                    pair.End = Utils.Source.Length;
                 }
                 else
                 {
-                    endindex = (agentIndex + 1) * blockSize;
+                    pair.End = (agentIndex + 1) * blockSize;
                 }
-                int[] rData = retreiveData(startindex, endindex);
 
-                Send(Utils.agentPool[agentIndex], Utils.Str(new BaseMessage
+                Send(Utils.agentPool[agentIndex], new BaseMessage<List<int>>
                 {
-                    Action = Actions.AssignAndSort
-                }.ToString(), fromArray(rData)));
+                    Message = new Message<List<int>>()
+                    {
+                        Action = Actions.AssignAndSort,
+                        Data = this.RetreiveData(pair)
+                    }
+                }.ToString());
 
                 agentIndex++;
             }
         }
-        int[] retreiveData(int limitA, int limitB)
-        {
 
-            List<int> list = new List<int>();
-            for (int i = limitA; i < limitB; i++)
+        private List<int> RetreiveData(Pair pair)
+        {
+            List<int> ret = new List<int>();
+
+            for (int i = pair.Start; i < pair.End; i++)
             {
-                list.Add(Utils.Source[i]);
+                ret.Add(Utils.Source[i]);
             }
 
-            return list.ToArray();
+            return ret;
+        }
 
-        }
-        string fromArray(int[] arr)
+        private bool HasNeighbor(string agent)
         {
-            string ret = "";
-            for (int i = 0; i < arr.Length; i++)
-            {
-                ret = ret + arr[i] + ",";
-            }
-            return ret.Remove(ret.Length - 1);
-        }
-        Boolean hasNeig(string agent)
-        {
-            Boolean has = false;
-            int indx = Utils.agentPool.IndexOf(agent);
+            bool ret = false;
+            int index = Utils.agentPool.IndexOf(agent);
+
             try
             {
-                Utils.agentPool[indx+1].ToString();
-                has = true;
+                Utils.agentPool[index + 1].ToString();
+                ret = true;
             }
             catch (Exception e)
             {
-                has = false;
+                ret = false;
             }
-            return has;
 
+            return ret;
         }
 
-        void evenPhase()
+        private void EvenPhase()
         {
             for (int i = 0; i < Utils.agentPool.Count; i++)
             {
                 if (i % 2 == 0)
-                    if (hasNeig(Utils.agentPool[i]))
-                        Send(Utils.agentPool[i], new BaseMessage
+                {
+                    if (HasNeighbor(Utils.agentPool[i]))
+                    {
+                        Send(Utils.agentPool[i], new BaseMessage<int>
                         {
-                            Action = Actions.EvenPhase
+                            Message = new Message<int>()
+                            {
+                                Action = Actions.EvenPhase
+                            }
                         }.ToString());
+                    }
+                }
             }
-
         }
-        void oddPhase()
+
+        private void OddPhase()
         {
             for (int i = 0; i < Utils.agentPool.Count; i++)
             {
                 if (i % 2 == 1)
-                    if (hasNeig(Utils.agentPool[i]))
-                        Send(Utils.agentPool[i], new BaseMessage
+                {
+                    if (HasNeighbor(Utils.agentPool[i]))
+                    {
+                        Send(Utils.agentPool[i], new BaseMessage<int>
                         {
-                            Action = Actions.OddPhase
+                            Message = new Message<int>()
+                            {
+                                Action = Actions.OddPhase
+                            }
                         }.ToString());
+                    }
+                }
             }
-
         }
     }
 }

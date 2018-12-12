@@ -1,198 +1,159 @@
-using ActressMas;
+using MASMA.Common;
 using MASMA.Message;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace MASMA.OddEven
 {
-    public class WorkerAgent : Agent
+    public class WorkerAgent : BaseWorker
     {
+        private List<int> _data;
 
-        private int[] data;
-        public WorkerAgent(int id)
+        public WorkerAgent(int id) : base($"Worker-{id}")
         {
-            data = new int[Utils.Length];
+            _data = Enumerable.Repeat(0, Utils.Length).ToList();
         }
 
         public override void Act(ActressMas.Message message)
         {
-            var baseMessage = new BaseMessage(message.Content);
-            Console.WriteLine("\t[{1} -> {0}]: {2}", this.Name, message.Sender, message.Content);
+            var baseMessage = new BaseMessage<object>(message.Content);
 
-            string action;
-            string parameters;
-            Utils.ParseMessage(message.Content, out action, out parameters);
-
-            switch (baseMessage.Action)
+            switch (baseMessage.Message.Action)
             {
                 case Actions.AssignAndSort:
-                    asignData(parameters);
+
+                    AsignData(JArray.Parse(baseMessage.Message.Data.ToString()).ToObject<List<int>>());
                     Sort();
-                    Send(Agents.MasterAgent, new BaseMessage
+
+                    Send(Agents.MasterAgent, new BaseMessage<int>
                     {
-                        Action = Actions.DoneAssignAndSort
+                        Message =  new Message<int>()
+                        {
+                            Action = Actions.DoneAssignAndSort
+                        }
                     }.ToString());
+
                     break;
+
                 case Actions.EvenPhase:
 
-                    if (hasNeig(this.Name))
+                    if (HasNeighbor(this.Name))
                     {
-                        int indx = Utils.agentPool.IndexOf(this.Name);
-                        Send(Utils.agentPool[indx + 1], Utils.Str(new BaseMessage
+                        int index = Utils.agentPool.IndexOf(this.Name);
+
+                        Send(Utils.agentPool[index + 1], new BaseMessage<List<int>>
                         {
-                            Action = Actions.MergeAndSplit
-                        }.ToString(), fromArray(this.data)));
+                            Message = new Message<List<int>>()
+                            {
+                                Action = Actions.MergeAndSplit,
+                                Data = this._data
+                            }
+                            
+                        }.ToString());
                     }
 
                     break;
                 case Actions.OddPhase:
 
-                    if (hasNeig(this.Name))
+                    if (HasNeighbor(this.Name))
                     {
-                        int indx = Utils.agentPool.IndexOf(this.Name);
-                        Send(Utils.agentPool[indx + 1], Utils.Str(new BaseMessage
+                        int index = Utils.agentPool.IndexOf(this.Name);
+
+                        Send(Utils.agentPool[index + 1], new BaseMessage<List<int>>
                         {
-                            Action = Actions.MergeAndSplit
-                        }.ToString(), fromArray(this.data)));
+                            Message = new Message<List<int>>()
+                            {
+                                Action = Actions.MergeAndSplit,
+                                Data =  _data
+                            }
+                        }.ToString());
                     }
+
                     break;
+
                 case Actions.MergeAndSplit:
 
-                    Console.WriteLine("Receive: " + parameters + " Own: " + fromArray(this.data));
+                    List<int> received = JArray.Parse(baseMessage.Message.Data.ToString()).ToObject<List<int>>();
+                    int[] own = this._data.ToArray();
 
-                    int[] received = asignData(parameters, 0);
-                    int[] own = this.data;
                     int[] result = received
                          .Concat(own)
                          .OrderBy(x => x)
                          .ToArray();
-                    int[] sendBck = result.Take((result.Length + 1) / 2).ToArray();
-                    this.data = result.Skip((result.Length + 1) / 2).ToArray();
-                    Send(message.Sender, Utils.Str(new BaseMessage
+
+                    List<int> sendBack = result.Take((result.Length + 1) / 2).ToList();
+                    this._data = result.Skip((result.Length + 1) / 2).ToList();
+
+                    Send(message.Sender, new BaseMessage<List<int>>
                     {
-                        Action = Actions.RefreshData
-                    }.ToString(), fromArray(sendBck)));
+                        Message = new Message<List<int>>()
+                        {
+                            Action = Actions.RefreshData,
+                            Data = sendBack
+                        } 
+                    }.ToString());
 
                     break;
                 case Actions.RefreshData:
-                    Console.Write("  Agent: " + this.Name + " data:  " );
-                    for (int i = 0; i < data.Length; i++)
-                        Console.Write(data[i] + ". ");
-                    Console.WriteLine();
-                    Console.WriteLine("  will update data with : " + parameters);
-                    this.data = asignData(parameters, 0);
+                      
+                     AsignData(JArray.Parse(baseMessage.Message.Data.ToString()).ToObject<List<int>>());
+
                     break;
+
                 case Actions.PrintData:
-                    for (int i = 0; i < data.Length; i++)
+
+                    for (int i = 0; i < _data.Count; i++)
                     {
-                        Utils.lsort.Add(data[i]);
+                        Utils.lsort.Add(_data[i]);
                     }
 
-                    Utils.destination.Add(this.Name, this.data);
-                    Send(Agents.MasterAgent, new BaseMessage
+                    Utils.destination.Add(this.Name, this._data.ToArray());
+
+                    Send(Agents.MasterAgent, new BaseMessage<int>
                     {
-                        Action = Actions.DonePrint
+                        Message = new Message<int>()
+                        {
+                            Action = Actions.DonePrint
+                        }
                     }.ToString());
+
                     Stop();
+
                     break;
             }
         }
 
-
-        Boolean hasNeig(string agent)
+        private bool HasNeighbor(string agent)
         {
-            Boolean has = false;
-            int indx = Utils.agentPool.IndexOf(agent);
+            bool ret = false;
+            int index = Utils.agentPool.IndexOf(agent);
+
             try
             {
-                Utils.agentPool[indx+1].ToString();
-                has = true;
+                Utils.agentPool[index + 1].ToString();
+                ret = true;
             }
             catch (Exception e)
             {
-                has = false;
+                ret = false;
             }
-            return has;
 
-        }
-        public void asignData(string data)
-        {
-
-            string[] spl = data.Split(',');
-            this.data = new int[spl.Length];
-            for (int i = 0; i < spl.Length; i++)
-            {
-                this.data[i] = Int32.Parse(spl[i]);
-
-            }
-        }
-        public int[] asignData(string data, int ir)
-        {
-
-            string[] spl = data.Split(',');
-            int[] ret = new int[spl.Length];
-            for (int i = 0; i < spl.Length; i++)
-            {
-                ret[i] = Int32.Parse(spl[i]);
-
-            }
             return ret;
         }
-        public void Sort()
+
+        private void AsignData(List<int> data)
         {
-            Array.Sort(data);
-        }
-        public void Sort2()
-        {
-            Boolean IsSorted = false;
-            int phase = 0;
-            if (!IsSorted)
+            for (int i = 0; i < data.Count; i++)
             {
-
-
-                // event phase
-                if (phase % 2 == 0)
-                {
-                    IsSorted = true;
-                    for (int i = 0; i <= this.data.Length - 2; i += 2)
-                    {
-
-                        if (this.data[i] > this.data[i + 1])
-                        {
-                            Utils.Swap(ref this.data[i], ref this.data[i + 1]);
-                            IsSorted = false;
-                        }
-
-                    }
-                }
-                else // odd phase
-                {
-                    IsSorted = true;
-                    for (int i = 1; i <= this.data.Length - 2; i += 2)
-                    {
-
-                        if (this.data[i] > this.data[i + 1])
-                        {
-                            Utils.Swap(ref this.data[i], ref this.data[i + 1]);
-                            IsSorted = false;
-                        }
-
-                    }
-                }
-                phase++;
+                this._data[i] = data[i];
             }
         }
-        string fromArray(int[] arr)
+
+        private void Sort()
         {
-            string ret = "";
-            for (int i = 0; i < arr.Length; i++)
-            {
-                ret = ret + arr[i] + ",";
-            }
-            return ret.Remove(ret.Length - 1);
+            _data.Sort();
         }
-
-
     }
 }

@@ -1,6 +1,6 @@
 ﻿/**************************************************************************
  *                                                                        *
- *  File:        BaseMessage.cs                                           *
+ *  File:        Message.cs                                               *
  *  Description: Merge Sort multi-agent                                   *
  *                                                                        *
  *  This program is free software; you can redistribute it and/or modify  *
@@ -14,26 +14,9 @@
 
 namespace MASMA.Message
 {
-
-    public class BaseMessage<T>
+    public class Message<T>
     {
-        private Serializer<T> _serializer = new Serializer<T>();
-
-        public Message<T> Message { get; set; }
-
-        public BaseMessage()
-        {
-
-        }
-
-        public BaseMessage(string json)
-        {
-            Message = _serializer.Deserialize(json);
-        }
-
-        public override string ToString()
-        {
-            return _serializer.Serialize(Message);
-        }
+        public string Action { get; set; }
+        public T Data { get; set; }
     }
 }

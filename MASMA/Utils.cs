@@ -47,7 +47,7 @@ namespace MASMA
         // Tests
         public static void Assert(int[] array)
         {
-            for (int i = 0; i < Length - 1; ++i)
+            for (int i = 0; i < array.Length - 1; ++i)
             {
                 if (array[i] > array[i + 1])
                 {

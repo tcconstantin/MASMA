@@ -1,45 +1,53 @@
-﻿using ActressMas;
-using MASMA.Common;
+﻿using MASMA.Common;
+using MASMA.Common.Models;
 using MASMA.Message;
-using System;
+using Newtonsoft.Json.Linq;
 
 namespace MASMA.Enumeration
 {
-    public class MasterAgent: Agent
+    public class MasterAgent: BaseMaster
     {
-        private int _done = 0;
-        private HighResTimer _counter = new HighResTimer();
+        private int _done;
+
+        public MasterAgent() : base(Agents.MasterAgent)
+        {
+            _done = 0;
+        }
 
         public override void Setup()
         {
-            _counter.Start();
-
-            BroadcastAll(new BaseMessage
+            BroadcastAll(new BaseMessage<int>
             {
-                Action = Actions.Sort
+                Message = new Message<int>()
+                {
+                    Action = Actions.Sort
+                }
             }.ToString());
         }
 
         public override void BeforeStop()
         {
-            Console.WriteLine(_counter.Stop());
+            base.BeforeStop();
+
             Utils.Assert(Utils.Destination);
         }
 
         public override void Act(ActressMas.Message message)
         {
-            var baseMessage = new BaseMessage(message.Content);
+            var baseMessage = new BaseMessage<object>(message.Content);
 
-            switch (baseMessage.Action)
+            switch (baseMessage.Message.Action)
             {
                 case Actions.Done:
                     _done++;
-                    if (_done == Utils.NoAgents)
-                    {
-                        Stop();
-                    }
-                    break;
 
+                    if (_done == Utils.NoAgents)
+                        Stop();
+
+                    break;
+                case Actions.Statistic:
+                    Statistics.Add(JObject.Parse(baseMessage.Message.Data.ToString()).ToObject<Statistic>());
+                    break;
             }
         }
     }

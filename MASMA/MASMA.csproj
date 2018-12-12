@@ -37,6 +37,9 @@
     <Reference Include="ActressMas">
       <HintPath>vendor\ActressMas.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,25 +50,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\HighResTimer.cs" />
-    <Compile Include="Enumeration\Actions.cs" />
+    <Compile Include="Actions.cs" />
+    <Compile Include="Agents.cs" />
+    <Compile Include="Common\BaseAgent.cs" />
+    <Compile Include="Common\BaseMaster.cs" />
+    <Compile Include="Common\BaseWorker.cs" />
+    <Compile Include="Common\Models\Pair.cs" />
+    <Compile Include="Common\Models\Statistic.cs" />
     <Compile Include="Enumeration\MasterAgent.cs" />
     <Compile Include="Enumeration\WorkerAgent.cs" />
-    <Compile Include="MergeSort\Actions.cs" />
-    <Compile Include="MergeSort\MasterAgent.cs" />
     <Compile Include="Message\BaseMessage.cs" />
-    <Compile Include="MergeSort\ParallelAlgorithm.cs" />
-    <Compile Include="OddEven\Actions.cs" />
+    <Compile Include="Message\Message.cs" />
+    <Compile Include="Message\Serializer.cs" />
     <Compile Include="OddEven\MasterAgent.cs" />
     <Compile Include="OddEven\WorkerAgent.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Message\StandardMessage.cs" />
-    <Compile Include="MergeSort\WorkerAgent.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
