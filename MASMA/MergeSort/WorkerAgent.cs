@@ -186,12 +186,9 @@ namespace MASMA.MergeSort
 
                         break;
                     case Actions.Print:
-
-                        Console.WriteLine();
                         for (int i = 0; i < _data.Count; i++)
                         {
                             Utils.Destination[i] = _data[i];
-                            Console.Write(_data[i] + " ");
                         }
                         Stop();
 
