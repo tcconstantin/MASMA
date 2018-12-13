@@ -53,13 +53,13 @@ namespace MASMA.MergeSort
                     case Actions.OwnSplit:
                         var sp1_own = _data.Take((_data.Count + 1) / 2).ToList();
                         var sp2_own = _data.Skip((_data.Count + 1) / 2).ToList();
-
+                        this.Statistic.NoAtomicOperation += 2;
                         if (sp1_own.Count >= Utils.Threshold && sp2_own.Count >= Utils.Threshold)
                         {
                             int a = CreateWorker(Utils.AgentPool.Count);
                             int b = CreateWorker(Utils.AgentPool.Count);
                             Thread.Sleep(200);
-
+                            this.Statistic.NoAtomicOperation += 2;
                             Send(Utils.AgentPool[a], new BaseMessage<List<int>>
                             {
                                 Message = new Message<List<int>>
@@ -102,12 +102,13 @@ namespace MASMA.MergeSort
                         var toSplit =  JArray.Parse(baseMessage.Message.Data.ToString()).ToObject<List<int>>();
                         var sp1 = toSplit.Take((toSplit.Count + 1) / 2).ToList();
                         var sp2 = toSplit.Skip((toSplit.Count + 1) / 2).ToList();
+                        this.Statistic.NoAtomicOperation += 2;
                     if (sp1.Count >= 2 && sp2.Count >= 2)
                     {
                         CreateWorker(Utils.AgentPool.Count);
                         CreateWorker(Utils.AgentPool.Count);
                         Thread.Sleep(200);
-
+                        this.Statistic.NoAtomicOperation += 2;
                         Send(Utils.AgentPool[1], new BaseMessage<List<int>>
                         {
                             Message = new Message<List<int>>
@@ -131,10 +132,11 @@ namespace MASMA.MergeSort
                         break;
                     case Actions.Assign:
                     _data = JArray.Parse(baseMessage.Message.Data.ToString()).ToObject<List<int>>();
+                    this.Statistic.NoAtomicOperation += 1;
                     break;
                     case Actions.AssignData:
                         _data = JArray.Parse(baseMessage.Message.Data.ToString()).ToObject<List<int>>();
-
+                        this.Statistic.NoAtomicOperation += 1;
                     Send(Utils.AgentPool[0], new BaseMessage<int>
                         {
                             Message = new Message<int>
@@ -146,6 +148,7 @@ namespace MASMA.MergeSort
                         break;
 
                     case Actions.SortAndAssignData:
+                    this.Statistic.NoAtomicOperation += 1;
                     _data.Sort();
                         Send(Agents.MasterAgent, new BaseMessage<int>
                         {
@@ -175,7 +178,7 @@ namespace MASMA.MergeSort
                         //stop
                         break;
                     case Actions.Merge:
-
+                    this.Statistic.NoAtomicOperation += 2;
                     var received = JArray.Parse(baseMessage.Message.Data.ToString()).ToObject<List<int>>();
                     var own = this._data;
                         var result = received
